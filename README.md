@@ -44,3 +44,4 @@ A personal journaling web application that allows users to create, organize, and
 **Kaushik Surapalli**
 
 GitHub: https://github.com/Kaushik-Surapalli
+Email: kaushiksurapalli@gmail.com
