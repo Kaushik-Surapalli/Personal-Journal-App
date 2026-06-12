@@ -1,19 +1,48 @@
-# Personal-Journal-App
+##My Journal
 
-## Overview
-
-A Python application that allows users to maintain daily journal entries.
+A personal journaling web application that allows users to create, organize, and manage daily journal entries with mood tracking and tagging features.
 
 ## Features
 
-- Add entries
-- View entries
-- Search entries
+- Create, edit, and delete journal entries
+- Mood tracking system
+- Entry categorization using tags
+- Search functionality
+- Rich text formatting tools
+- Export entries as text files
+- Word and character count
+- Clean and responsive user interface
 
-## Technologies
+## Tech Stack
 
-- Python
+- HTML5
+- CSS3
+- JavaScript
+- Local Storage
+
+## 📸 Preview
+
+
+
 
 ## How to Run
 
-python main.py
+1. Clone the repository
+   ```bash
+   git clone https://github.com/Kaushik-Surapalli/repository-name.git
+   ```
+
+2. Open `index.html` in your browser.
+
+##  Key Learnings
+
+- DOM Manipulation
+- Event Handling
+- Local Storage CRUD Operations
+- Search and Filtering
+- Dynamic UI Design
+
+## 👨‍💻 Author
+**Kaushik Surapalli**
+
+GitHub: https://github.com/Kaushik-Surapalli
