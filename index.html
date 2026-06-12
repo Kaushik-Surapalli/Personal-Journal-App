@@ -289,12 +289,19 @@
     border: 1px solid var(--cream);
     border-radius: var(--radius);
     padding: 28px 32px;
-    outline: none; resize: none;
+    outline: none;
     transition: border-color .2s;
     box-shadow: inset 0 1px 4px rgba(0,0,0,.04);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
   .text-area:focus { border-color: var(--accent); }
-  .text-area::placeholder { color: #ccc; font-style: italic; }
+  .text-area:empty::before {
+    content: attr(data-placeholder);
+    color: #ccc; font-style: italic;
+    pointer-events: none;
+  }
 
   /* word count bar */
   .stats-bar {
@@ -466,9 +473,10 @@
       </div>
 
       <!-- Writing area -->
-      <textarea class="text-area" id="bodyInput"
-        placeholder="Begin writing your thoughts here… There are no rules, only your words."
-        oninput="updateWordCount()"></textarea>
+      <div class="text-area" id="bodyInput"
+        contenteditable="true"
+        data-placeholder="Begin writing your thoughts here… There are no rules, only your words."
+        oninput="updateWordCount()"></div>
 
       <div class="stats-bar">
         <span class="word-count" id="wordCountBar">0 words · 0 characters</span>
@@ -567,7 +575,7 @@ function renderList() {
   list.innerHTML = filtered.map(e => {
     const tag = (e.tags||[])[0] || null;
     const dotClass = tag ? tagDotClass(tag) : 'dot-none';
-    const preview = e.body.replace(/\n/g,' ').trim();
+    const preview = (() => { const d = document.createElement('div'); d.innerHTML = e.body; return d.innerText; })().replace(/\n/g,' ').trim();
     return `<div class="entry-card${e.id === currentId ? ' active':''}"
       onclick="openEntry('${e.id}')">
       <div class="entry-card-title">${e.title || 'Untitled'}</div>
@@ -614,7 +622,7 @@ function showEditor(e) {
   ev.style.display = 'flex';
   ev.classList.add('visible');
   document.getElementById('titleInput').value = e.title;
-  document.getElementById('bodyInput').value = e.body;
+  document.getElementById('bodyInput').innerHTML = e.body;
   updateWordCount();
   document.getElementById('datePill').textContent = `📅 ${fmtDate(e.updatedAt)} · ${fmtTime(e.updatedAt)}`;
   document.getElementById('moodPill').textContent = e.mood ? `${e.mood} Mood` : '😊 No mood';
@@ -635,7 +643,7 @@ function saveEntry() {
   const idx = entries.findIndex(x => x.id === currentId);
   if (idx < 0) return;
   entries[idx].title = document.getElementById('titleInput').value.trim() || 'Untitled';
-  entries[idx].body  = document.getElementById('bodyInput').value;
+  entries[idx].body  = document.getElementById('bodyInput').innerHTML;
   entries[idx].updatedAt = new Date().toISOString();
   saveEntries(entries);
   renderList();
@@ -646,12 +654,15 @@ function saveEntry() {
 }
 
 /* Auto-save on input */
-['titleInput','bodyInput'].forEach(id => {
-  document.getElementById(id).addEventListener('input', () => {
-    document.getElementById('autoSaveStatus').textContent = 'Unsaved changes…';
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(saveEntry, 1500);
-  });
+document.getElementById('titleInput').addEventListener('input', () => {
+  document.getElementById('autoSaveStatus').textContent = 'Unsaved changes…';
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(saveEntry, 1500);
+});
+document.getElementById('bodyInput').addEventListener('input', () => {
+  document.getElementById('autoSaveStatus').textContent = 'Unsaved changes…';
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(saveEntry, 1500);
 });
 
 /* ── MOOD ── */
@@ -679,7 +690,7 @@ function toggleTag(chip) {
 
 /* ── WORD COUNT ── */
 function updateWordCount() {
-  const txt = document.getElementById('bodyInput').value;
+  const txt = document.getElementById('bodyInput').innerText || '';
   const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
   document.getElementById('wordCountBar').textContent = `${words} words · ${txt.length} characters`;
   document.getElementById('wordCountPill').textContent = `📝 ${words} words`;
@@ -687,29 +698,25 @@ function updateWordCount() {
 
 /* ── TOOLBAR ── */
 function fmt(cmd) {
-  const ta = document.getElementById('bodyInput');
-  const start = ta.selectionStart, end = ta.selectionEnd;
-  const sel = ta.value.slice(start, end);
-  if (!sel) return;
-  const map = { bold:`**${sel}**`, italic:`_${sel}_`, underline:`__${sel}__` };
-  const rep = map[cmd] || sel;
-  ta.value = ta.value.slice(0, start) + rep + ta.value.slice(end);
-  ta.focus();
+  document.getElementById('bodyInput').focus();
+  document.execCommand(cmd, false, null);
   updateWordCount();
 }
 function insertText(t) {
-  const ta = document.getElementById('bodyInput');
-  const pos = ta.selectionStart;
-  ta.value = ta.value.slice(0, pos) + t + ta.value.slice(pos);
-  ta.selectionStart = ta.selectionEnd = pos + t.length;
-  ta.focus(); updateWordCount();
+  const el = document.getElementById('bodyInput');
+  el.focus();
+  document.execCommand('insertText', false, t);
+  updateWordCount();
 }
 function insertDate() { insertText(`[${new Date().toLocaleDateString('en-IN')}] `); }
 function insertTime() { insertText(`[${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}] `); }
 function clearText() {
   if (confirm('Clear all text in this entry?')) {
-    document.getElementById('bodyInput').value = '';
+    const el = document.getElementById('bodyInput');
+    el.innerHTML = '';
+    el.focus();
     updateWordCount();
+    saveEntry();
   }
 }
 
@@ -739,7 +746,7 @@ function exportEntry() {
     `Tags    : ${(e.tags||[]).join(', ') || 'None'}`,
     `─`.repeat(40),
     '',
-    e.body
+    (() => { const d = document.createElement('div'); d.innerHTML = e.body; return d.innerText; })()
   ].join('\n');
   const blob = new Blob([text], { type:'text/plain' });
   const a = document.createElement('a');
