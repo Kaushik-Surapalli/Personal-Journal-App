@@ -4,15 +4,14 @@ A personal journaling web application that allows users to create, organize, and
 
 ## Features
 
-- Create, edit, and delete journal entries
-- Mood tracking system
-- Entry categorization using tags
-- Search functionality
-- Rich text formatting tools
-- Export entries as text files
-- Word and character count
-- Clean and responsive user interface
-
+- Rich text editor — Bold, Italic, Underline formatting
+- Auto-save — saves as you type, persists across sessions
+- Mood tracker — log your mood with every entry
+- Color-coded tags — Personal, Work, Travel, Ideas, Health
+- Live search across all entries
+- Export entries as .txt files
+- Word & character count in real time
+  
 ## Tech Stack
 
 - HTML5
