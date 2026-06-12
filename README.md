@@ -22,7 +22,7 @@ A personal journaling web application that allows users to create, organize, and
 
 ## 📸 Preview
 
-!(Screenshot) Journal-pic.png
+![Personal Journal](Journal-pic.png)
 
 ## How to Run
 
