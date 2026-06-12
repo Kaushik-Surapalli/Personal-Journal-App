@@ -1,4 +1,4 @@
-## My Journal
+## My Personal Journal
 
 A personal journaling web application that allows users to create, organize, and manage daily journal entries with mood tracking and tagging features.
 
