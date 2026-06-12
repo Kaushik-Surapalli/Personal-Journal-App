@@ -22,7 +22,7 @@ A personal journaling web application that allows users to create, organize, and
 
 ## 📸 Preview
 
-https://github.com/Kaushik-Surapalli/Personal-Journal-App/blob/02334dce9a189cf356004ca9c67a0657d5ef9543/Journal-pic.png
+!(Screenshot) Journal-pic.png
 
 ## How to Run
 
